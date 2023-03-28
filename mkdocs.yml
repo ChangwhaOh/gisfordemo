@@ -48,5 +48,6 @@ nav:
     - FAQ: faq.md
     - Changelog: changelog.md
     - Report Issues: https://github.com/ChangwhaOh/gisfordemo/issues
+    - Examples:
     - API Reference:
           - gisfordemo module: gisfordemo.md
