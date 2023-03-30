@@ -26,6 +26,7 @@ def generate_random_string(length, upper = False, digit = False, punc = False):
     result_str = ''.join(random.choice(chars) for i in range(length))
     return result_str
 
+
 def generate_lucky_number(length = 1):
     """_summary_
 
