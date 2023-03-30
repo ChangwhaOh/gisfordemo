@@ -50,5 +50,6 @@ nav:
     - Report Issues: https://github.com/ChangwhaOh/gisfordemo/issues
     - Examples:
           - examples/intro.ipynb
+          - examples/folium.ipynb
     - API Reference:
           - gisfordemo module: gisfordemo.md
