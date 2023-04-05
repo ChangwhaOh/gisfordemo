@@ -6,18 +6,32 @@ import ipyleaflet
 
 
 class Map(ipyleaflet.Map):
+    """Class 'Map'
 
-    def __init__(self, center, zoom, **kwargs):
+    Args:
+        ipyleaflet (_type_): _description_
+    """
+    def __init__(self, center = [37.5, 127], zoom = 8, **kwargs):
         """_summary_
 
         Args:
-            center (_type_): _description_
-            zoom (_type_): _description_
+            center (list): _description_
+            zoom (int): _description_
         """        
         if 'scroll_wheel_zoom' not in kwargs:
             kwargs['scroll_wheel_zoom'] = True
         super().__init__(center = center, zoom = zoom, **kwargs) # inherited from the parent, in this case, ipyleaflet
+        
+        if 'layers_control' not in kwargs:
+            kwargs['layers_control'] = True
+        
+        if kwargs['layers_control']:
+            self.add_layers_control()
+
+        self.add_search_control()
     
+
+
     def add_search_control(self, position = 'topleft', **kwargs):
         """_summary_
 
@@ -30,9 +44,16 @@ class Map(ipyleaflet.Map):
         search_control = ipyleaflet.SearchControl(position = position, **kwargs)
         self.add_control(search_control)
 
-    def add_draw_control(self, **kwargs):
-        draw_control = ipyleaflet.DrawControl(**kwargs)
+
+    def add_draw_control(self, position = 'topleft', **kwargs):
+        """_summary_
+
+        Args:
+            position (str, optional): _description_. Defaults to 'topleft'.
+        """        
+        draw_control = ipyleaflet.DrawControl(position = position, **kwargs)
         self.add_control(draw_control)
+
 
     def add_layers_control(self, position = 'topright', **kwargs):
         """_summary_
@@ -42,6 +63,79 @@ class Map(ipyleaflet.Map):
         """        
         layers_control = ipyleaflet.LayersControl(position = position, **kwargs)
         self.add_control(layers_control)
+
+
+    def add_tile_layer(self, url, name, attribution = '', **kwargs):
+        """_summary_
+
+        Args:
+            url (str): _description_
+            name (str): _description_
+            attribution (str, optional): _description_. Defaults to ''.
+        """        
+        tile_layer = ipyleaflet.TileLayer(
+            url = url,
+            name = name,
+            attribution = attribution,
+            **kwargs
+        )
+        self.add_layer(tile_layer)
+    
+
+    def add_basemap(self, basemap, **kwargs):
+        """_summary_
+
+        Args:
+            basemap (str): _description_
+
+        Raises:
+            ValueError: _description_
+        """
+        import xyzservices.providers as xyz
+
+        if basemap.lower() == 'roadmap':
+            url = 'http://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}'
+            self.add_tile_layer(url, name = basemap, **kwargs)
+        elif basemap.lower() == 'satellite':
+            url = 'http://mt0.google.com/vt/lyrs=y&hl=en&x={x}&y={y}&z={z}'
+            self.add_tile_layer(url, name = basemap, **kwargs)
+        else:
+            try:
+                basemap = eval(f'xyz.{basemap}')
+                url = basemap.build_url()
+                attribution = basemap.attribution
+                self.add_tile_layer(url, name = basemap, attribution = attribution, **kwargs)
+            except:
+                raise ValueError(f'{basemap} is not found')
+
+
+    def add_geojson(self, data, name = 'GeoJSON', **kwargs):
+        """_summary_
+
+        Args:
+            data (str): _description_
+            name (str, optional): _description_. Defaults to 'GeoJSON'.
+        """        
+        if isinstance(data, str):
+            import json
+            with open(data, 'r') as f:
+                data = json.load(f)
+
+        geojson = ipyleaflet.GeoJSON(data = data, name = name, **kwargs)
+        self.add_layer(geojson)
+
+
+    def add_shp(self, data, name = 'ShapeFile', **kwargs):
+        """_summary_
+
+        Args:
+            data (str): _description_
+            name (str, optional): _description_. Defaults to 'ShapeFile'.
+        """        
+        import geopandas as gpd
+        gdf = gpd.read_file(data)
+        geojson = gdf.__geo_interface__
+        self.add_layer(geojson, name = name, **kwargs)
 
 
 
