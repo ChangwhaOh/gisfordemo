@@ -34,6 +34,14 @@ class Map(ipyleaflet.Map):
         draw_control = ipyleaflet.DrawControl(**kwargs)
         self.add_control(draw_control)
 
+    def add_layers_control(self, position = 'topright', **kwargs):
+        """_summary_
+
+        Args:
+            position (str, optional): _description_. Defaults to 'topright'.
+        """        
+        layers_control = ipyleaflet.LayersControl(position = position, **kwargs)
+        self.add_control(layers_control)
 
 
 
